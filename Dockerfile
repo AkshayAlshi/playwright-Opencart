@@ -1,10 +1,11 @@
-﻿FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y curl gnupg
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
-RUN npm install -g playwright@latest
+﻿# Use an official Maven image with JDK
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+
+# Set working directory
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
+# Copy project files
 COPY . .
-CMD ["npx", "playwright", "test"]
+
+# Run tests (this will download dependencies and execute your Java Playwright tests)
+CMD ["mvn", "test"]
