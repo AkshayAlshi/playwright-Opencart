@@ -1,13 +1,10 @@
-﻿FROM ghcr.io/microsoft/playwright/java:jammy
-
+﻿FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y curl gnupg
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+RUN npm install -g playwright@latest
 WORKDIR /app
-
-# Copy Maven config
-COPY pom.xml ./
-RUN mvn dependency:go-offline -B
-
-# Copy source
-COPY src ./src
-
-# Run tests by default
-CMD ["mvn", "test"]
+COPY package*.json ./
+RUN npm install
+COPY . .
+CMD ["npx", "playwright", "test"]
