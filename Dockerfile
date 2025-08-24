@@ -1,7 +1,13 @@
-﻿FROM mcr.microsoft.com/playwright:jammy
+﻿FROM ghcr.io/microsoft/playwright/java:jammy
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npx playwright install --with-deps
-CMD ["npx", "playwright", "test"]
+
+# Copy Maven config
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
+
+# Copy source
+COPY src ./src
+
+# Run tests by default
+CMD ["mvn", "test"]
